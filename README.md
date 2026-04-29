@@ -12,7 +12,7 @@
 
 Per-point covariance estimation for aerial / UAV photogrammetric point clouds. For every point in the dense reconstruction, the pipeline produces a 3×3 error covariance matrix that propagates uncertainty through the full two-step photogrammetry process — Structure-from-Motion / Bundle Adjustment (SfM/BA) and Multi-View Stereo (MVS / Dense Image Matching).
 
-This repository is the **Python re-implementation** of the framework. The paper's experimental results were produced with the in-house C++ MVS package **MSP** (<https://u.osu.edu/qin.324/msp/>), which uses **Semi-Global Matching (SGM)** for dense matching. This repository ships an end-to-end Python pipeline that uses **OpenCV SGBM** for the dense matching step and re-implements the same uncertainty quantification framework on top of it. We therefore expect the numerical results produced here to be **close to, but not bit-exact with**, the figures reported in the paper.
+This repository is the **Python re-implementation** of the framework. The paper's experimental results were produced with the in-house C++ MVS package [**MSP**](https://u.osu.edu/qin.324/msp/), which uses **Semi-Global Matching (SGM)** for dense matching. This repository ships an end-to-end Python pipeline that uses **OpenCV SGBM** for the dense matching step and re-implements the same uncertainty quantification framework on top of it. We therefore expect the numerical results produced here to be **close to, but not bit-exact with**, the figures reported in the paper.
 
 The framework propagates uncertainty as
 
