@@ -21,7 +21,7 @@ where $\Sigma_\theta$ is the camera-parameter covariance from BA, $\Sigma_{\text
 
 ![Framework overview — paper Figure 2](figures/figure2_framework.png)
 
-> *Paper Figure 2 — overview of the uncertainty quantification framework. SfM-stage covariance $\Sigma_\theta$ and MVS-stage disparity covariance $\Sigma_{\text{disp}}$ are propagated through the projection-function Jacobians to a 3×3 covariance per 3D point.*
+> *Paper Figure 2 — overview of the uncertainty quantification framework. SfM-stage covariance Σ_θ and MVS-stage disparity covariance Σ_disp are propagated through the projection-function Jacobians to a 3×3 covariance per 3D point.*
 
 ---
 
