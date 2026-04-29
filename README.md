@@ -252,11 +252,17 @@ The script writes the HTML to a temp directory, starts a one-shot local HTTP ser
 
 ## 📊 Evaluation
 
-`scripts/evaluate_uncertainty.py` compares the predicted per-point uncertainty σ against ground-truth LiDAR. For every MVS point it computes the nearest-neighbor LiDAR distance after ICP fine-alignment, and reports:
+`scripts/evaluate_uncertainty.py` compares the predicted per-point uncertainty σ = √(tr Σ_g) against ground-truth LiDAR. For every MVS point it computes the nearest-neighbor LiDAR distance d after ICP fine-alignment, and reports the same five metrics used in the paper's evaluation:
 
-- **Bounding rate** — fraction of points where σ > distance (i.e. the predicted 1σ envelope contains the LiDAR surface)
-- **MAE** and **RMSE** of `σ − distance`
-- σ-distribution and distance-distribution stats (min / median / max)
+| Metric | Direction | Definition |
+|--------|:---------:|------------|
+| **pearson**       | ↑ | corrcoef(σ, d) — does σ track the actual error |
+| **mean** (MAE)    | ↓ | mean &#124;σ − d&#124; |
+| **rmse**          | ↓ | √(mean((σ − d)²)) |
+| **kl_div**        | ↓ | KL between 1-D Gaussians N(0, d²) ‖ N(0, σ²), averaged over points |
+| **bounded rate**  | ↑ | percent of points where σ > d (predicted 1σ envelope contains the LiDAR surface) |
+
+σ-distribution and distance-distribution stats (min / median / max) are also printed and saved.
 
 Run it on the pipeline output:
 
@@ -289,7 +295,7 @@ Before running `evaluate_uncertainty.py` you must coarsely align the LiDAR to th
 4. (Optional) Visually verify in CloudCompare that they overlap. ICP handles small residuals afterwards.
 5. Save the aligned LiDAR back to a `.las` and pass it as `--lidar`.
 
-If the median offset between MVS and LiDAR exceeds `50 × max_dist`, the script prints a warning. ICP itself will simply report `fitness=0` if it never finds correspondences.
+If your LiDAR is already aligned to the MVS frame, ICP handles small residuals on its own; otherwise it will simply report `fitness=0` and produce no useful metrics.
 
 ---
 
