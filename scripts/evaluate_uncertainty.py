@@ -96,21 +96,48 @@ def per_point_distance(src_xyz: np.ndarray, tgt_xyz: np.ndarray) -> np.ndarray:
 
 
 def summarize(sigma: np.ndarray, dist: np.ndarray) -> dict:
-    """Bounding rate, MAE, RMSE, and distribution stats."""
+    """Pearson, MAE, RMSE, KL divergence, bounding rate, plus distribution stats.
+
+    Mirrors src/utils.py::eval_metrics in the parent algorithm-agnostic-
+    uncertainty repo:
+      - sigma = sqrt(trace(Sigma_g))                        (scalar reduction)
+      - bounded_rate = mean(sigma > dist) * 100             [percent]
+      - pearson      = corrcoef(sigma, dist)
+      - mean         = mean(|sigma - dist|)                 [MAE]
+      - rmse         = sqrt(mean((sigma - dist)**2))
+      - kl_div       = mean( log(sigma/dist) + dist^2 / (2*sigma^2) - 0.5 )
+                       (KL between 1-D Gaussians N(0, dist^2) || N(0, sigma^2))
+    """
     valid = np.isfinite(sigma) & np.isfinite(dist)
     s, d = sigma[valid], dist[valid]
-    bounded = (s > d).astype(np.float64)
+    if len(s) < 2:
+        return {"n_points": int(len(s))}
+
+    pearson      = float(np.corrcoef(s, d)[0, 1])
+    mae          = float(np.mean(np.abs(s - d)))
+    rmse         = float(np.sqrt(np.mean((s - d) ** 2)))
+    bounded_rate = float((s > d).mean() * 100.0)
+
+    eps = 1e-8
+    sp = np.maximum(d, eps)
+    sq = np.maximum(s, eps)
+    kl_per_pt = np.log(sq / sp) + (sp ** 2) / (2.0 * sq ** 2) - 0.5
+    kl_per_pt = kl_per_pt[np.isfinite(kl_per_pt)]
+    kl_div = float(kl_per_pt.mean()) if kl_per_pt.size > 0 else float("nan")
+
     return {
-        "n_points":       int(len(s)),
-        "bounding_rate":  float(bounded.mean()),
-        "mae":            float(np.mean(np.abs(s - d))),
-        "rmse":           float(np.sqrt(np.mean((s - d) ** 2))),
-        "sigma_min":      float(s.min()),
-        "sigma_median":   float(np.median(s)),
-        "sigma_max":      float(s.max()),
-        "dist_min":       float(d.min()),
-        "dist_median":    float(np.median(d)),
-        "dist_max":       float(d.max()),
+        "n_points":     int(len(s)),
+        "pearson_up":   pearson,
+        "mean_dn":      mae,
+        "rmse_dn":      rmse,
+        "kl_div_dn":    kl_div,
+        "bounded_pct_up": bounded_rate,
+        "sigma_min":    float(s.min()),
+        "sigma_median": float(np.median(s)),
+        "sigma_max":    float(s.max()),
+        "dist_min":     float(d.min()),
+        "dist_median":  float(np.median(d)),
+        "dist_max":     float(d.max()),
     }
 
 
@@ -150,15 +177,6 @@ def main():
     xyz_lidar = load_lidar_xyz(lidar_path)
     print(f"      {len(xyz_lidar)} LiDAR points")
 
-    # Quick coarse-alignment sanity check
-    mvs_c   = np.median(xyz_mvs,   axis=0)
-    lidar_c = np.median(xyz_lidar, axis=0)
-    delta   = lidar_c - mvs_c
-    if np.linalg.norm(delta) > args.max_dist * 50:
-        print(f"[warn] median offset MVS->LiDAR = {delta} (norm "
-              f"{np.linalg.norm(delta):.1f}). ICP gate is {args.max_dist} m. "
-              f"You likely need to pre-align the LiDAR before running this.")
-
     print(f"[3/4] Running ICP (point-to-point, max_dist={args.max_dist}, "
           f"max_iter={args.max_iter}) ...")
     T, fitness, inlier_rmse = icp_align(xyz_mvs, xyz_lidar,
@@ -173,10 +191,12 @@ def main():
     metrics = summarize(sigma, dist)
 
     print()
-    print(f"  N points       : {metrics['n_points']}")
-    print(f"  bounding rate  : {metrics['bounding_rate'] * 100:6.2f} %   (sigma > distance)")
-    print(f"  MAE  |sigma-d| : {metrics['mae']:.4f} m")
-    print(f"  RMSE           : {metrics['rmse']:.4f} m")
+    print(f"  N points          : {metrics['n_points']}")
+    print(f"  pearson      ↑    : {metrics['pearson_up']:.4f}")
+    print(f"  mean (MAE)   ↓    : {metrics['mean_dn']:.4f} m")
+    print(f"  rmse         ↓    : {metrics['rmse_dn']:.4f} m")
+    print(f"  KL div       ↓    : {metrics['kl_div_dn']:.4f}")
+    print(f"  bounded rate ↑    : {metrics['bounded_pct_up']:6.2f} %   (sigma > distance)")
     print(f"  sigma  min/med/max : {metrics['sigma_min']:.4f} / "
           f"{metrics['sigma_median']:.4f} / {metrics['sigma_max']:.4f} m")
     print(f"  dist   min/med/max : {metrics['dist_min']:.4f} / "
