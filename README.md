@@ -1,9 +1,8 @@
 # Uncertainty Quantification Framework for Aerial and UAV Photogrammetry through Error Propagation
 
-[Debao Huang](https://debaohuang.github.io/)<sup>1,2,3</sup>, [Rongjun Qin](https://u.osu.edu/qin.324/)<sup>1,2,3,4,*</sup>
+[Debao Huang](https://debaohuang.github.io/), [Rongjun Qin](https://u.osu.edu/qin.324/)<sup>\*</sup>
 
-<sup>1</sup> Geospatial Data Analytics Laboratory · <sup>2</sup> Department of Civil, Environmental and Geodetic Engineering · <sup>3</sup> Department of Electrical and Computer Engineering · <sup>4</sup> Translational Data Analytics Institute, **The Ohio State University**
-<sup>\*</sup> Corresponding author
+**The Ohio State University** · <sup>\*</sup> Corresponding author
 
 [arXiv](https://arxiv.org/abs/2507.13486) · [Paper PDF](paper/ISPRS_J_uncertainty.pdf) · *ISPRS Journal of Photogrammetry and Remote Sensing* (accepted, 2026)
 *(this README will be updated with the official journal link once published)*
