@@ -16,11 +16,9 @@ This repository is the **Python re-implementation** of the framework. The paper'
 
 The framework propagates uncertainty as
 
-```
-Σ_g = ( Σ_ε⁻¹ + B_Xᵀ ( A Σ_θ Aᵀ + Σ_disp )⁻¹ B_X )⁻¹
-```
+$$\Sigma_g = \left( \Sigma_\varepsilon^{-1} + B_X^\top \left( A \Sigma_\theta A^\top + \Sigma_{\text{disp}} \right)^{-1} B_X \right)^{-1}$$
 
-where Σ_θ is the camera-parameter covariance from BA, Σ_disp is the disparity-uncertainty covariance from MVS, and A, B_X are Jacobians of the projection function w.r.t. the camera parameters and the 3D point, respectively (paper Eq. 1).
+where $\Sigma_\theta$ is the camera-parameter covariance from BA, $\Sigma_{\text{disp}}$ is the disparity-uncertainty covariance from MVS, and $A$, $B_X$ are Jacobians of the projection function w.r.t. the camera parameters and the 3D point, respectively (paper Eq. 1).
 
 ---
 
@@ -32,13 +30,13 @@ where Σ_θ is the camera-parameter covariance from BA, Σ_disp is the disparity
 2. **Select stereo pairs** from the co-visibility graph (or by SIFT matching with `--sift_graph`).
 3. **Pairwise dense matching** with **OpenCV SGBM** — disparity map + matching-cost proxy.
 4. **Multi-view fusion** — fuse per-pair depth maps into per-reference XYZ grids with a multi-view geometric-consistency check; a 3D point is kept only if observed in ≥ 3 views.
-5. **Disparity-uncertainty regression** — using **n-view points (n ≥ 6)** as pseudo-check points, regress per-pixel disparity uncertainty `u` from matching-cost cues (8 cost-σ bins, interpolated per-pixel), then refine with the reprojection residual.
-6. **Propagation to 3D-point covariance** — propagate disparity uncertainty (Σ_disp) plus the SfM camera-parameter covariance (Σ_θ) to a 3×3 covariance per 3D point via Eq. 1 above.
-7. **Write outputs** — per-image `*_cov.npz` (xyz, 3×3 cov, σ), `*_fused.las`, plus dataset-wide `fused_all_cov.npz` and `fused_all.las`.
+5. **Disparity-uncertainty regression** — using **n-view points** ($n \ge 6$) as pseudo-check points, regress per-pixel disparity uncertainty $u$ from matching-cost cues (8 cost–$\sigma$ bins, interpolated per-pixel), then refine with the reprojection residual.
+6. **Propagation to 3D-point covariance** — propagate disparity uncertainty ($\Sigma_{\text{disp}}$) plus the SfM camera-parameter covariance ($\Sigma_\theta$) to a 3×3 covariance per 3D point via Eq. 1 above.
+7. **Write outputs** — per-image `*_cov.npz` (xyz, 3×3 cov, $\sigma$), `*_fused.las`, plus dataset-wide `fused_all_cov.npz` and `fused_all.las`.
 
-A separate script, `scripts/compute_sensor_error_prop.py`, implements just the **SfM-stage** propagation (camera-parameter covariance → 3D-point covariance, i.e. Σ_disp = 0 in Eq. 1) using the **NBUP** formulation from the **USfM** framework — see <https://github.com/michalpolic/usfm.github.io>.
+A separate script, `scripts/compute_sensor_error_prop.py`, implements just the **SfM-stage** propagation (camera-parameter covariance → 3D-point covariance, i.e. $\Sigma_{\text{disp}} = 0$ in Eq. 1) using the **NBUP** formulation from the **USfM** framework — see <https://github.com/michalpolic/usfm.github.io>.
 
-`scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML viewer that draws the 3σ covariance ellipsoid for any clicked point.
+`scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML viewer that draws the $3\sigma$ covariance ellipsoid for any clicked point.
 
 ---
 
@@ -206,13 +204,13 @@ In the `--out` directory:
 | `fused_all.las` | voxel-fused colored point cloud (all images) |
 | `mvs_pipeline_<timestamp>.log` | full DEBUG log for the run |
 
-The 3×3 `gt_cov` field stores Σ_g (paper Eq. 1). Per-point scalar uncertainty `sigma` is computed as `sqrt(trace(Σ_g))`.
+The 3×3 `gt_cov` field stores $\Sigma_g$ (paper Eq. 1). The `sigma` field is computed as $\sqrt{\operatorname{tr}(\Sigma_g)}$.
 
 ---
 
 ## 👁️ Visualizer
 
-`scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML page that lets you click any point to draw its 3σ covariance ellipsoid:
+`scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML page that lets you click any point to draw its $3\sigma$ covariance ellipsoid:
 
 ```bash
 python scripts/visualize_sensor_cov.py \
