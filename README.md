@@ -130,8 +130,6 @@ python scripts/run_mvs_pipeline.py \
     --sift_graph
 ```
 
-> **Note** — the Dortmund subset has no GT camera poses or GT depth maps in NeRFBK, so disparity-uncertainty evaluation is not feasible. Airborne LiDAR is provided and is used in the paper to evaluate point-cloud uncertainty only.
-
 ### 2. UseGeo (FBK-3DOM aerial benchmark)
 
 UseGeo is a UAV-based multi-sensor dataset with three flights covering different urban / peri-urban areas (Dataset-1 / Dataset-2 / Dataset-3). Download from:
