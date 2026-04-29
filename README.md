@@ -1,16 +1,18 @@
 # Uncertainty Quantification Framework for Aerial and UAV Photogrammetry through Error Propagation
 
+[Debao Huang](https://debaohuang.github.io/)<sup>1,2,3</sup>, [Rongjun Qin](https://u.osu.edu/qin.324/)<sup>1,2,3,4,*</sup>
+
+<sup>1</sup> Geospatial Data Analytics Laboratory · <sup>2</sup> Department of Civil, Environmental and Geodetic Engineering · <sup>3</sup> Department of Electrical and Computer Engineering · <sup>4</sup> Translational Data Analytics Institute, **The Ohio State University**
+<sup>\*</sup> Corresponding author
+
+[arXiv](https://arxiv.org/abs/2507.13486) · [Paper PDF](paper/ISPRS_J_uncertainty.pdf) · *ISPRS Journal of Photogrammetry and Remote Sensing* (accepted, 2026)
+*(this README will be updated with the official journal link once published)*
+
+---
+
 Per-point covariance estimation for aerial / UAV photogrammetric point clouds. For every point in the dense reconstruction, the pipeline produces a 3×3 error covariance matrix that propagates uncertainty through the full two-step photogrammetry process — Structure-from-Motion / Bundle Adjustment (SfM/BA) and Multi-View Stereo (MVS / Dense Image Matching).
 
-This repository is the **Python re-implementation** of the uncertainty quantification framework presented in:
-
-> **Uncertainty Quantification Framework for Aerial and UAV Photogrammetry through Error Propagation**
-> [Debao Huang](https://debaohuang.github.io/), [Rongjun Qin](https://u.osu.edu/qin.324/)
-> *ISPRS Journal of Photogrammetry and Remote Sensing* (accepted, 2026)
-> Preprint: <https://arxiv.org/abs/2507.13486> · PDF: [`paper/ISPRS_J_uncertainty.pdf`](paper/ISPRS_J_uncertainty.pdf)
-> *(this README will be updated with the official journal link once published)*
-
-The paper's experimental results were produced with the in-house C++ MVS package **MSP** (<https://u.osu.edu/qin.324/msp/>), which uses **Semi-Global Matching (SGM)** for dense matching. This repository ships an end-to-end Python pipeline that uses **OpenCV SGBM** for the dense matching step and re-implements the same uncertainty quantification framework on top of it. We therefore expect the numerical results produced here to be **close to, but not bit-exact with**, the figures reported in the paper.
+This repository is the **Python re-implementation** of the framework. The paper's experimental results were produced with the in-house C++ MVS package **MSP** (<https://u.osu.edu/qin.324/msp/>), which uses **Semi-Global Matching (SGM)** for dense matching. This repository ships an end-to-end Python pipeline that uses **OpenCV SGBM** for the dense matching step and re-implements the same uncertainty quantification framework on top of it. We therefore expect the numerical results produced here to be **close to, but not bit-exact with**, the figures reported in the paper.
 
 The framework propagates uncertainty as
 
@@ -22,7 +24,7 @@ where Σ_θ is the camera-parameter covariance from BA, Σ_disp is the disparity
 
 ---
 
-## Pipeline overview
+## ⚙️ Pipeline overview
 
 `scripts/run_mvs_pipeline.py` implements, for each reference image and a set of co-visible neighbors:
 
@@ -40,7 +42,7 @@ A separate script, `scripts/compute_sensor_error_prop.py`, implements just the *
 
 ---
 
-## Installation
+## 📦 Installation
 
 ```bash
 git lfs install               # the example COLMAP poses are tracked in Git LFS
@@ -74,7 +76,7 @@ A CUDA-capable GPU is optional but recommended for `--sift_graph` on large datas
 
 ---
 
-## Repo layout
+## 📁 Repo layout
 
 ```
 UncertaintyQuantification/
@@ -95,7 +97,7 @@ The `examples/` folders contain only the COLMAP `sparse/` triplet (`cameras.bin`
 
 ---
 
-## Examples
+## 🚀 Examples
 
 The example poses we ship were produced with COLMAP using the **original FBK images, with the original filenames preserved**. The shipped `images.bin` therefore references files such as `backward_001_009_145000282.tif` (Dortmund) or `2021-04-23_13-17-12_S2223314_DxO_res.jpg` (UseGeo). Do **not** rename images after download — the pipeline matches by filename.
 
@@ -192,7 +194,7 @@ PY
 
 ---
 
-## Outputs
+## 💾 Outputs
 
 In the `--out` directory:
 
@@ -208,7 +210,7 @@ The 3×3 `gt_cov` field stores Σ_g (paper Eq. 1). Per-point scalar uncertainty 
 
 ---
 
-## Visualizer
+## 👁️ Visualizer
 
 `scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML page that lets you click any point to draw its 3σ covariance ellipsoid:
 
@@ -223,7 +225,7 @@ The script writes the HTML to a temp directory, starts a one-shot local HTTP ser
 
 ---
 
-## Common flags
+## 🎛️ Common flags
 
 | Flag | Default | Effect |
 |------|---------|--------|
@@ -237,7 +239,7 @@ See `python scripts/run_mvs_pipeline.py --help` for the full list.
 
 ---
 
-## Citation
+## 📚 Citation
 
 If you use this code, please cite:
 
@@ -255,7 +257,7 @@ If you use `scripts/compute_sensor_error_prop.py` (SfM-stage propagation), pleas
 
 ---
 
-## License
+## 📜 License
 
 ### Code
 
