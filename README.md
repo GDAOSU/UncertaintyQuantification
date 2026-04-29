@@ -77,6 +77,7 @@ Required packages:
 | laspy | LAS point cloud output (and visualizer LAS overlay) |
 | matplotlib | visualizer LAS-overlay polygon clipping |
 | torch | only used by `--sift_graph` (GPU brute-force SIFT matching) |
+| open3d | only used by `evaluate_uncertainty.py` (point-to-point ICP) |
 
 A CUDA-capable GPU is optional but recommended for `--sift_graph` on large datasets.
 
@@ -91,7 +92,8 @@ UncertaintyQuantification/
 │   ├── compute_sensor_error_prop.py   # SfM-stage propagation only (USfM/NBUP, Σ_disp=0)
 │   ├── rectify.py                     # stereo rectification helpers
 │   ├── colmap_io.py                   # COLMAP binary readers (Schönberger)
-│   └── visualize_sensor_cov.py        # interactive Three.js viewer
+│   ├── visualize_sensor_cov.py        # interactive Three.js viewer
+│   └── evaluate_uncertainty.py        # ICP align + per-point distance + metrics
 ├── examples/
 │   ├── Dortmund/sparse/               # COLMAP poses only — see "Examples"
 │   └── UseGeo/Dataset-{1,2,3}/sparse/
@@ -245,6 +247,49 @@ The script writes the HTML to a temp directory, starts a one-shot local HTTP ser
 - `--las` (optional) — companion `*_fused.las` / `fused_all.las` for native RGB overlay
 - `--max_points` — random subsample for performance (default 200 000; `0` disables)
 - `--port` — HTTP port (`0` = pick a free port automatically)
+
+---
+
+## 📊 Evaluation
+
+`scripts/evaluate_uncertainty.py` compares the predicted per-point uncertainty σ against ground-truth LiDAR. For every MVS point it computes the nearest-neighbor LiDAR distance after ICP fine-alignment, and reports:
+
+- **Bounding rate** — fraction of points where σ > distance (i.e. the predicted 1σ envelope contains the LiDAR surface)
+- **MAE** and **RMSE** of `σ − distance`
+- σ-distribution and distance-distribution stats (min / median / max)
+
+Run it on the pipeline output:
+
+```bash
+python scripts/evaluate_uncertainty.py \
+    --npz   examples/UseGeo/Dataset-1/out/fused_all_cov.npz \
+    --lidar /path/to/UseGeo_dataset1_aligned.las
+```
+
+Outputs an `eval.npz` next to the input (xyz, σ, distance, bounded mask, ICP transform, metrics) and prints metrics to stdout.
+
+### Downloading LiDAR ground truth
+
+LiDAR point clouds are large (1.7–4 GB per dataset) and are **not redistributed in this repo** — download them from the upstream FBK pages:
+
+| Dataset | Source | Notes |
+|---------|--------|-------|
+| Dortmund | <https://github.com/3DOM-FBK/NeRFBK> *(Aerial — Dortmund)* | airborne LiDAR provided alongside imagery |
+| UseGeo Dataset-1 / 2 / 3 | <https://github.com/3DOM-FBK/UseGeo> | airborne LiDAR + GT depth maps per dataset |
+
+### Coordinate-frame alignment (you must do this)
+
+The COLMAP poses we ship were produced in a **local frame** (per-dataset bbox roughly centered around the origin). The LiDAR clouds released by FBK are in their **original survey frame** (typically absolute UTM). The two frames differ by a per-dataset translation of hundreds to thousands of meters.
+
+Before running `evaluate_uncertainty.py` you must coarsely align the LiDAR to the MVS frame so that point correspondences fall **within ICP's 2 m gating distance**. Suggested workflow:
+
+1. Open the MVS `fused_all.las` (output of `run_mvs_pipeline.py`) and the raw LiDAR side-by-side in CloudCompare / Open3D.
+2. Read the bounding-box centers (or any common feature) of both clouds.
+3. Subtract the translation `(Δx, Δy, Δz) = MVS_center − LiDAR_center` from the LiDAR XYZ.
+4. (Optional) Visually verify in CloudCompare that they overlap. ICP handles small residuals afterwards.
+5. Save the aligned LiDAR back to a `.las` and pass it as `--lidar`.
+
+If the median offset between MVS and LiDAR exceeds `50 × max_dist`, the script prints a warning. ICP itself will simply report `fitness=0` if it never finds correspondences.
 
 ---
 

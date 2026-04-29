@@ -4,3 +4,4 @@ opencv-python>=4.8
 laspy>=2.5
 matplotlib>=3.5
 torch>=2.0
+open3d>=0.17
