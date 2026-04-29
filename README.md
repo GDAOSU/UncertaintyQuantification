@@ -204,7 +204,7 @@ In the `--out` directory:
 | `fused_all.las` | voxel-fused colored point cloud (all images) |
 | `mvs_pipeline_<timestamp>.log` | full DEBUG log for the run |
 
-The 3×3 `gt_cov` field stores $\Sigma_g$ (paper Eq. 1). The `sigma` field is computed as $\sqrt{\operatorname{tr}(\Sigma_g)}$.
+The 3×3 `gt_cov` field stores $\Sigma_g$ (paper Eq. 1). The `sigma` field is computed as $\sqrt{\mathrm{tr}(\Sigma_g)}$.
 
 ---
 
