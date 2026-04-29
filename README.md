@@ -34,7 +34,7 @@ where Σ_θ is the camera-parameter covariance from BA, Σ_disp is the disparity
 6. **Propagation to 3D-point covariance** — propagate disparity uncertainty (Σ_disp) plus the SfM camera-parameter covariance (Σ_θ) to a 3×3 covariance per 3D point via Eq. 1 above.
 7. **Write outputs** — per-image `*_cov.npz` (xyz, 3×3 cov, σ), `*_fused.las`, plus dataset-wide `fused_all_cov.npz` and `fused_all.las`.
 
-A separate script, `scripts/compute_sensor_error_prop.py`, implements just the **SfM-stage** propagation (camera-parameter covariance → 3D-point covariance, i.e. Σ_disp = 0 in Eq. 1) using the **NBUP** formulation from the **USfM** framework — see <https://github.com/michalpolic/usfm.github.io>. This is the "BA-only" baseline used in the paper.
+A separate script, `scripts/compute_sensor_error_prop.py`, implements just the **SfM-stage** propagation (camera-parameter covariance → 3D-point covariance, i.e. Σ_disp = 0 in Eq. 1) using the **NBUP** formulation from the **USfM** framework — see <https://github.com/michalpolic/usfm.github.io>.
 
 `scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML viewer that draws the 3σ covariance ellipsoid for any clicked point.
 
@@ -80,7 +80,7 @@ A CUDA-capable GPU is optional but recommended for `--sift_graph` on large datas
 UncertaintyQuantification/
 ├── scripts/
 │   ├── run_mvs_pipeline.py            # main entrypoint (steps 1–7 above)
-│   ├── compute_sensor_error_prop.py   # SfM-only baseline (USfM/NBUP, Σ_disp=0)
+│   ├── compute_sensor_error_prop.py   # SfM-stage propagation only (USfM/NBUP, Σ_disp=0)
 │   ├── rectify.py                     # stereo rectification helpers
 │   ├── colmap_io.py                   # COLMAP binary readers (Schönberger)
 │   └── visualize_sensor_cov.py        # interactive Three.js viewer
@@ -251,7 +251,7 @@ If you use this code, please cite:
 }
 ```
 
-If you use the BA-only baseline (`scripts/compute_sensor_error_prop.py`), please also acknowledge the **USfM** framework by Michal Polic — <https://github.com/michalpolic/usfm.github.io>.
+If you use `scripts/compute_sensor_error_prop.py` (SfM-stage propagation), please also acknowledge the **USfM** framework by Michal Polic — <https://github.com/michalpolic/usfm.github.io>.
 
 ---
 
