@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.idea/
+.vscode/
+
+# Pipeline outputs
+examples/*/out/
+examples/*/*/out/
+examples/*/images/
+examples/*/*/images/
+*.npz
+*.las
+*.tif
+*.log
+mvs_tmp_*/
