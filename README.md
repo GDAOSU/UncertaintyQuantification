@@ -207,7 +207,13 @@ The 3×3 `gt_cov` field stores $\Sigma_g$ (paper Eq. 1). The `sigma` field is th
 
 ## 👁️ Visualizer
 
-`scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML page that lets you click any point to draw its $3\sigma$ covariance ellipsoid:
+`scripts/visualize_sensor_cov.py` builds a self-contained Three.js HTML page for inspecting per-point covariance.
+
+| Overview — points colored by σ | Click a point → 3σ ellipsoid |
+|:---:|:---:|
+| ![visualizer overview](figures/visualizer1.png) | ![visualizer ellipsoid](figures/visualizer2.png) |
+
+Run it on the pipeline output:
 
 ```bash
 python scripts/visualize_sensor_cov.py \
@@ -216,7 +222,20 @@ python scripts/visualize_sensor_cov.py \
     --max_points 200000
 ```
 
-The script writes the HTML to a temp directory, starts a one-shot local HTTP server, and opens your browser. `--las` is optional — when given, the LAS point cloud is overlaid in its native RGB. `--max_points 0` disables subsampling.
+The script writes the HTML to a temp directory, starts a one-shot local HTTP server, and opens your browser.
+
+**Controls**
+
+- **Left-drag** rotate · **Right-drag** pan · **Scroll** zoom
+- **Click** any point → the right panel shows its position, σ_x / σ_y / σ_z and the 3σ covariance ellipsoid is drawn at that point (toggle visibility / scale in the same panel)
+- The bottom colorbar maps σ → color (jet); points outside the active σ range can be filtered with the slider above
+
+**Flags**
+
+- `--npz` (required) — path to a `*_cov.npz` or `fused_all_cov.npz` produced by the pipeline
+- `--las` (optional) — companion `*_fused.las` / `fused_all.las` for native RGB overlay
+- `--max_points` — random subsample for performance (default 200 000; `0` disables)
+- `--port` — HTTP port (`0` = pick a free port automatically)
 
 ---
 
