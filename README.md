@@ -19,6 +19,10 @@ $$\Sigma_g = \left( \Sigma_\varepsilon^{-1} + B_X^\top \left( A \Sigma_\theta A^
 
 where $\Sigma_\theta$ is the camera-parameter covariance from BA, $\Sigma_{\text{disp}}$ is the disparity-uncertainty covariance from MVS, and $A$, $B_X$ are Jacobians of the projection function w.r.t. the camera parameters and the 3D point, respectively (paper Eq. 1).
 
+![Framework overview — paper Figure 2](figures/figure2_framework.png)
+
+> *Paper Figure 2 — overview of the uncertainty quantification framework. SfM-stage covariance $\Sigma_\theta$ and MVS-stage disparity covariance $\Sigma_{\text{disp}}$ are propagated through the projection-function Jacobians to a 3×3 covariance per 3D point.*
+
 ---
 
 ## ⚙️ Pipeline overview
@@ -30,6 +34,11 @@ where $\Sigma_\theta$ is the camera-parameter covariance from BA, $\Sigma_{\text
 3. **Pairwise dense matching** with **OpenCV SGBM** — disparity map + matching-cost proxy.
 4. **Multi-view fusion** — fuse per-pair depth maps into per-reference XYZ grids with a multi-view geometric-consistency check; a 3D point is kept only if observed in ≥ 3 views.
 5. **Disparity-uncertainty regression** — using **n-view points** ($n \ge 6$) as pseudo-check points, regress per-pixel disparity uncertainty $u$ from matching-cost cues (8 cost–$\sigma$ bins, interpolated per-pixel), then refine with the reprojection residual.
+
+   ![MVS uncertainty estimation — paper Figure 3](figures/figure3_mvs_method.png)
+
+   > *Paper Figure 3 — (1) reliable n-view points are taken from the MVS reconstruction; (2) each is reprojected to every stereo pair, giving a residual r and a matching cost c; (3) per cost-bin residual std σ_r is computed; (4) per-pixel disparity uncertainty u is interpolated between bins.*
+
 6. **Propagation to 3D-point covariance** — propagate disparity uncertainty ($\Sigma_{\text{disp}}$) plus the SfM camera-parameter covariance ($\Sigma_\theta$) to a 3×3 covariance per 3D point via Eq. 1 above.
 7. **Write outputs** — per-image `*_cov.npz` (xyz, 3×3 cov, $\sigma$), `*_fused.las`, plus dataset-wide `fused_all_cov.npz` and `fused_all.las`.
 
