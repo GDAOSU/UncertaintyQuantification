@@ -4,7 +4,7 @@
 
 **The Ohio State University** · <sup>\*</sup> Corresponding author
 
-[Journal](https://doi.org/10.1016/j.isprsjprs.2026.04.047) · [arXiv](https://arxiv.org/abs/2507.13486) · [Paper PDF](paper/ISPRS_J_uncertainty.pdf) · *ISPRS Journal of Photogrammetry and Remote Sensing*, vol. 237, pp. 589–605, 2026
+[Journal](https://doi.org/10.1016/j.isprsjprs.2026.04.047) · *ISPRS Journal of Photogrammetry and Remote Sensing*, vol. 237, pp. 589–605, 2026
 
 ---
 
