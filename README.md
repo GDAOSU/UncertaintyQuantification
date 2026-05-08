@@ -4,8 +4,7 @@
 
 **The Ohio State University** · <sup>\*</sup> Corresponding author
 
-[arXiv](https://arxiv.org/abs/2507.13486) · [Paper PDF](paper/ISPRS_J_uncertainty.pdf) · *ISPRS Journal of Photogrammetry and Remote Sensing* (accepted, 2026)
-*(this README will be updated with the official journal link once published)*
+[Journal](https://doi.org/10.1016/j.isprsjprs.2026.04.047) · [arXiv](https://arxiv.org/abs/2507.13486) · [Paper PDF](paper/ISPRS_J_uncertainty.pdf) · *ISPRS Journal of Photogrammetry and Remote Sensing*, vol. 237, pp. 589–605, 2026
 
 ---
 
@@ -318,12 +317,16 @@ See `python scripts/run_mvs_pipeline.py --help` for the full list.
 If you use this code, please cite:
 
 ```bibtex
-@article{huang2026uncertainty,
-  title   = {Uncertainty Quantification Framework for Aerial and UAV Photogrammetry through Error Propagation},
-  author  = {Huang, Debao and Qin, Rongjun},
+@article{HUANG2026589,
+  title   = {Uncertainty quantification framework for aerial and UAV photogrammetry through error propagation},
+  author  = {Debao Huang and Rongjun Qin},
   journal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+  volume  = {237},
+  pages   = {589--605},
   year    = {2026},
-  note    = {Preprint: arXiv:2507.13486}
+  issn    = {0924-2716},
+  doi     = {https://doi.org/10.1016/j.isprsjprs.2026.04.047},
+  url     = {https://www.sciencedirect.com/science/article/pii/S0924271626002285}
 }
 ```
 
